@@ -90,7 +90,7 @@ router.post('/dogs', async (req,res) =>{
         weight,
         image,
         yearsOfLife,
-        createdInDb
+
     })
 
     let temperamentDb = await Temperamento.findAll({where: {name: temperament}})
@@ -98,6 +98,17 @@ router.post('/dogs', async (req,res) =>{
 
     res.send('Dog created succesfully!')
 });
+
+router.get('/dogs/:idRaza', async (req, res) =>{
+    const id = req.params.id;
+    const dogsTotal = await getAllDogs()
+    if(id){
+        let dogId = await dogsTotal.filter(el => el.id == id)
+        dogId.lenght?
+        res.status(200).json(dogId) :
+        res.status(404).send('I did not find that dog')
+    }
+})
 
 
 module.exports = router;
