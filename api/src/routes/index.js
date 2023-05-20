@@ -1,7 +1,8 @@
 const { Router } = require('express');
 const axios = require ('axios');
 const {Dog, Temperamento} = require ("../db");
-const { APIKEY } = process.env;
+const { Sequelize, Op } = require('sequelize');
+const {APIKEY} = process.env;
 
 
 // Importar todos los routers;
@@ -13,7 +14,7 @@ const router = Router();
 // Configurar los routers
 // Ejemplo: router.use('/auth', authRouter);
 const getApiInfo = async () => {
-    const apiUrl = await axios.get('https://api.thedogapi.com/v1/breeds');
+    const apiUrl = await axios.get(`https://api.thedogapi.com/v1/breeds/?api_key=${APIKEY}`);
     const apiInfo = await apiUrl.data.map(el => {
         return {
             name: el.name,
@@ -49,13 +50,13 @@ const getAllDogs = async () =>{
 
 
 router.get('/dogs', async (req, res) =>{
-    const breed = req.query.name
+    const name = req.query.name
     let dogsTotal = await getAllDogs();
     
-    if(breed){
-        let dogsBreeds = await dogsTotal.filter(el => el.breed.tolowerCase().includes(id, name, height, weight, breed, yearsOfLife, image))
-        dogsBreeds.lenght ?
-        res.status(200).send(dogsBreeds) :
+    if(name){
+        let dogsName = dogsTotal.filter(el => el.name.toLowerCase().includes(name.toLowerCase))
+        dogsName.length ?
+        res.status(200).send(dogsName) :
         res.status(404).send('No existe la raza');
     } else{
         res.status(200).send(dogsTotal)
@@ -64,106 +65,114 @@ router.get('/dogs', async (req, res) =>{
 
 
 router.get('/dogs/name', async (req, res) => {
-    const {name} = req.query;
+    const { name } = req.query;
     try {
-        const dogDB = await Dog.findAll({
-            where: {
-                name: {
-                    [Op.iLike]: `%${name}%`
-                }
-            },
-            include: {
-                model: Temperamento,
-                attributes: ['name'],
-                through: {
-                    attributes: []
-                }
-            }
-        });
-
-        const response = await axios.get(`https://api.thedogapi.com/v1/breeds/${name}`);
-        const dogApi = response.data.map(dog => ({
-            id: dog.id,
-            name: dog.name,
-            image: dog.image.url,
-            temperament: dog.temperament?.split(','.map(e => e.trim())) || []
-        }));
-
-        const dogs = [...dogDB, ...dogApi];
-
-        if (dogs.lenght === 0) {
-            return res.status(404).json({error: 'No hay ningun perro con ese nombre'});
+      const dogDB = await Dog.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `%${name}%`
+          }
+        },
+        include: {
+          model: Temperamento,
+          attributes: ['name'],
+          through: {
+            attributes: []
+          }
         }
-        res.json(dogs);
-    }catch (error) {
-        console.log(error);
-        res.status(500).json({error: error.message});
-    }
-});
-
-
-
-router.get('/temperaments', async(req,res) => {
-    try {
-        let temperament = await Temperamento.findAll();
-        if(temperament.lenght === 0) {
-            const response = await axios.get('https://api.thedogapi.com/v1/breeds');
-            console.log(response.data.results);
-            const apiTemperament = response.data.results;
-            apiTemperament.forEach(async (temperament) => {
-                const newTemperament = new Temperamento({name: temperament.name});
-                await newTemperament.save();
-                console.log( `Se guardo correctamente ${temperament.name} en la base de datos`);
-            });
-            temperament =  await Temperamento.findAll();
-        }
-        res.json(temperament);
+      });
+  
+      const response = await axios.get(`https://api.thedogapi.com/v1/breeds?api_key=${APIKEY}&name=${name}`);
+      const dogApi = response.data.map(dog => ({
+        id: dog.id,
+        name: dog.name,
+        image: dog.image.url,
+        temperament: dog.temperament?.split(',').map(e => e.trim()) || []
+      }));
+  
+      const dogs = [...dogDB, ...dogApi];
+  
+      if (dogs.length === 0) {
+        return res.status(404).json({ error: 'No hay ningún perro con ese nombre' });
+      }
+      res.json(dogs);
     } catch (error) {
-        console.log(error);
-        res.status(404).json({error: error.message});
+      console.log(error);
+      res.status(500).json({ error: error.message });
     }
-});
+  });
+  
+
+  router.get('/temperaments/:temperament', async (req, res) => {
+    const { temperament } = req.params;
+  
+    try {
+      const temperamento = await Temperamento.findOne({
+        where: {
+          name: {
+            [Op.iLike]: `%${temperament}%`
+          }
+        },
+        include: [{
+          model: Dog
+        }]
+      });
+  
+      if (!temperamento) {
+        return res.status(404).json({ error: 'Temperamento no encontrado' });
+      }
+  
+      const dogs = temperamento.dogs;
+      res.status(200).json(dogs);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al buscar perros por temperamento' });
+    }
+  });
+  
+    
+
 
 router.post('/dogs', async (req,res) =>{
-    const {
-        name,
-        height,
-        weight,
-        image,
-        life_span, 
-        createdInDb,
-        temperament
+    const { name, height, weight, life_span, image, temperament, createdInDb } = req.body;
+    
 
-    } = req.body;
+  // Crea un nuevo objeto dog con los datos
+  const dog = {
+    name: 'Tita',
+    height: 60,
+    weight: 80,
+    life_span:"10-14 years",
+    image: "file:///Users/eduardopablogimenez/Desktop/IMG_0342.JPG",
+    temperament: "Curious, Playful, Adventurous, Active, Fun-loving",
+    createdInDb: new Date()
+  };
 
-    let dogCreated = await Dog.create({
-        name, 
-        height,
-        weight,
-        image,
-        life_span,
-        createdInDb
-
-    })
-
-    let temperamentDb = await Temperamento.findAll({where: {name: temperament}})
-    dogCreated.addTemperament(temperamentDb)
-
-    res.send('Dog created succesfully!')
+  try {
+    // Guarda el objeto dog en la base de datos utilizando Sequelize
+    const createdDog = await Dog.create(dog);
+    res.status(200).json(createdDog); // Devuelve el objeto dog creado en la respuesta
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al crear el perro' });
+  }
+    
 });
+
 
 router.get('/dogs/:id', async (req,res) => {
     const {id} = req.params;
     try {
-        const response = await axios.get (`https://api.thedogapi.com/v1/breeds/${id}`);
+        const response = await axios.get (`https://api.thedogapi.com/v1/breeds/${id}?api_key=${APIKEY}`);
 
         const dogId ={
             name: response.data.name,
-            height: response.data.height.metric,
-            weight: response.data.weight.metric,
+            height: response.data.height,
+            weight: response.data.weight,
             life_span: response.data.life_span,
             temperament: response.data.temperament,
             reference_image_id: response.data.reference_image_id,
+            url: response.data.url
         };
         res.status(200).json(dogId)
     } catch (error) {
@@ -176,4 +185,4 @@ router.get('/dogs/:id', async (req,res) => {
 
 
 
-module.exports = router;
+module.exports = router, Sequelize;

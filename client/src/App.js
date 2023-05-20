@@ -1,11 +1,22 @@
 import './App.css';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import LandingPage from './componentes/LandingPage';
+import HomePage from './componentes/HomePage';
+
 
 function App() {
   return (
+    <BrowserRouter>
     <div className="App">
-      <h1>Henry Dogs</h1>
+      <Routes>
+        <Route exact path="/" element={<LandingPage/>} />
+        <Route path="/home" element={<HomePage/>} />
+        
+      </Routes>
     </div>
+    </BrowserRouter>
   );
 }
+
 
 export default App;

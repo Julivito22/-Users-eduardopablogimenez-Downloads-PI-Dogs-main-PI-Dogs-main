@@ -1,0 +1,99 @@
+.buttom {
+    width: 25%;
+    color: black;
+    opacity: 0.6;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    background-color: white;
+    -webkit-transition-duration: 0.4s; 
+    transition-duration: 0.4s;
+    font-size: 30px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 21px -3px 9px -4px rgba(20,19,19,0.74);
+    border-radius: 31px 40px 36px 36px;
+   
+}
+
+.buttom:hover {
+    background-color: chocolate;
+    color: white;
+}
+
+@keyframes color-change {
+    0% { background-color:antiquewhite; }
+    50% { background-color:blanchedalmond; }
+    100% { background-color:chocolate; }
+  }
+
+
+.h1 {
+    animation: color-change 2s linear infinite;
+    font-size: 5em;
+    -webkit-text-stroke: 1px black; /* Borde negro de 1 píxel */
+    color: white;
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-top: 15%;
+
+}
+
+.patitasContainer {
+    width: 300px;
+    height: 300px;
+    position: relative;
+    perspective: 1000px;
+  }
+  
+  .patitas {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: brown;
+    border-radius: 50%;
+    
+  }
+
+  .walk {
+    animation: walkAnimation 1s infinite;
+  }
+  
+  @keyframes walkAnimation {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    25% {
+      transform: translate(-50%, -50%) rotate(10deg);
+    }
+    50% {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+    75% {
+      transform: translate(-50%, -50%) rotate(-10deg);
+    }
+    100% {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+
+
+
+
+
+

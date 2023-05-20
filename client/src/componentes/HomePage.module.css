@@ -1,0 +1,31 @@
+.select {
+    background-color:whitesmoke; 
+  color: black;
+  border-color: 5px, chocolate; 
+  width: 200px; 
+  height: 30px;
+  border: 1px solid #ccc; /* Borde del select */
+  border-radius: 4px;
+}
+
+select:hover {
+    cursor: pointer;
+ }
+
+ select::-ms-expand {
+    display: none; /* Ocultar la flecha en Internet Explorer y Microsoft Edge */
+  }
+  
+  select::after {
+    content: "\25BC"; /* Carácter de flecha hacia abajo */
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #333; /* Color de la flecha */
+  }
+
+  .barra {
+    display: flex;
+    justify-content: center; 
+  }
