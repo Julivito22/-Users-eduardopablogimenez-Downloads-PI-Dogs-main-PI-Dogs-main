@@ -2,6 +2,9 @@ import axios from 'axios';
 export const FILTER_BY_TEMPERAMENT = 'FILTER_BY_TEMPERAMENT';
 export const GET_DOGS = "GET_DOGS";
 export const FILTER_CREATED = 'FILTER_CREATED';
+export const SORT_DOGS_BY_ALPHABET = 'SORT_DOGS_BY_ALPHABET';
+export const SORT_DOGS_BY_WEIGHT= 'SORT_DOGS_BY_WEIGHT';
+export const GET_DOG_DETAIL='GET_DOG_DETAIL';
 
 export function getDogs(){
     return async function(dispatch){
@@ -43,3 +46,33 @@ export function filterCreated(payload){
         payload
     }
 }
+
+export const sortDogsByAlphabet = (order) => {
+    return {
+      type: 'SORT_DOGS_BY_ALPHABET',
+      payload: order,
+    };
+  };
+  
+  
+  export const sortDogsByWeight = (order) => {
+    return {
+      type: 'SORT_DOGS_BY_WEIGHT',
+      payload: order,
+    };
+  };
+
+  export const getDogDetail = (id) => {
+    return async (dispatch) => {
+      try {
+        const response = await axios.get(`http://localhost:3001/dogs/${id}`);
+        const dogDetail = response.data;
+        dogDetail.image = {
+          url: response.data.url
+        };
+        dispatch({ type: 'GET_DOG_DETAIL', payload: dogDetail });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  };

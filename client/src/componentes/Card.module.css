@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.card {
+    
+    
+    box-shadow: 10px 10px 5px 0px rgba(249, 242, 242, 0.08);
+    border-radius: 10px;
+    transition: 0.5s;
+    text-shadow: 1px -3px 8px rgba(0,0,0,0.51);
+    text-align: top;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    scroll-snap-align: start;
+    background-color: antiquewhite;
+    width: 25em;
+    height: 23em;
+    display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateZ(0); 
+  transition: transform 0.3s ease;
+  background-color: rgba(224, 220, 211, 0.78);
+   
+     }
+
+     .card-container {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      perspective: 1000px;
+      }
+      
+
+      .card img {
+        width: 50%;
+        height: 300px; 
+        object-fit: cover; 
+
+         }
+      
+         .card:hover {
+            transform: scale(1.05); 
+          }
+      
+      
+
+
+.imagen {
+    box-shadow: 10px 10px 61px 0px rgba(0,0,0,0.75);
+    border-radius: 15px;
+    width: 25em;
+     }
+
+     .texto {
+        font-family: " Indie Flower", sans-serif;
+     }

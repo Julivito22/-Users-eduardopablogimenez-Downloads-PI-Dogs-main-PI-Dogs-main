@@ -1,23 +1,32 @@
 import React from "react";
+import style from './Paginado.module.css';
 
+export default function Paginado({ dogsPerPage, totalDogs, paginado }) {
+  const totalPages = Math.ceil(totalDogs / dogsPerPage);
 
+  const handleClick = (pageNumber) => {
+    paginado(pageNumber);
+  };
 
-export default function Paginado ({dogsPerPage, allDogs, paginado}){
-const pageNumbers =[]
-
-for (let i=0; i<=Math.ceil(allDogs.length/dogsPerPage); i++){
-    pageNumbers.push(i+1)
+  return (
+    <nav>
+      <ul className={style.pagination}>
+        {Array.from({ length: totalPages }).map((_, index) => {
+          const pageNumber = index + 1;
+          return (
+            <li key={pageNumber} className={style.page}>
+              <button
+                className={style.pageButton}
+                onClick={() => handleClick(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
 }
 
-return(
-    <nav >
-        <ul className="paginado">
-            {pageNumbers &&
-            pageNumbers.map((number)=> (
-                <li className="number" key={`page-${number}`}>
-               <a href="/home" onClick={()=> paginado(number)}>{number} </a> 
-               </li>
-               ))}
-        </ul>
-    </nav>
-)}
+  

@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const axios = require ('axios');
-const {Dog, Temperamento} = require ("../db");
+const {Dogs, Temperamentos} = require ("../db");
 const { Sequelize, Op } = require('sequelize');
 const {APIKEY} = process.env;
 
@@ -30,9 +30,9 @@ const getApiInfo = async () => {
 };
 
 const getDbInfo = async () => {
-    return await Dog.findAll({
+    return await Dogs.findAll({
         include: {
-            model: Temperamento,
+            model: Temperamentos,
             attributes: ['id', 'name'],
             through: {
                 attributes: [],
@@ -64,17 +64,17 @@ router.get('/dogs', async (req, res) =>{
 });
 
 
-router.get('/dogs/name', async (req, res) => {
+router.get('/dogs', async (req, res) => {
     const { name } = req.query;
     try {
-      const dogDB = await Dog.findAll({
+      const dogDB = await Dogs.findAll({
         where: {
           name: {
             [Op.iLike]: `%${name}%`
           }
         },
         include: {
-          model: Temperamento,
+          model: Temperamentos,
           attributes: ['name'],
           through: {
             attributes: []
@@ -82,7 +82,8 @@ router.get('/dogs/name', async (req, res) => {
         }
       });
   
-      const response = await axios.get(`https://api.thedogapi.com/v1/breeds?api_key=${APIKEY}&name=${name}`);
+      const response = await axios.get(`https://api.thedogapi.com/v1/breeds/?name=${name}&api_key=${APIKEY}`);
+      console.log(response.data);
       const dogApi = response.data.map(dog => ({
         id: dog.id,
         name: dog.name,
@@ -90,11 +91,11 @@ router.get('/dogs/name', async (req, res) => {
         temperament: dog.temperament?.split(',').map(e => e.trim()) || []
       }));
   
-      const dogs = [...dogDB, ...dogApi];
-  
-      if (dogs.length === 0) {
+      if (dogDB.length === 0 && dogApi.length === 0) {
         return res.status(404).json({ error: 'No hay ningún perro con ese nombre' });
       }
+      
+      const dogs = [...dogDB, ...dogApi];
       res.json(dogs);
     } catch (error) {
       console.log(error);
@@ -107,14 +108,14 @@ router.get('/dogs/name', async (req, res) => {
     const { temperament } = req.params;
   
     try {
-      const temperamento = await Temperamento.findOne({
+      const temperamento = await Temperamentos.findOne({
         where: {
           name: {
             [Op.iLike]: `%${temperament}%`
           }
         },
         include: [{
-          model: Dog
+          model: Dogs
         }]
       });
   
@@ -150,7 +151,7 @@ router.post('/dogs', async (req,res) =>{
 
   try {
     // Guarda el objeto dog en la base de datos utilizando Sequelize
-    const createdDog = await Dog.create(dog);
+    const createdDog = await Dogs.create(dog);
     res.status(200).json(createdDog); // Devuelve el objeto dog creado en la respuesta
   } catch (error) {
     console.error(error);
@@ -163,7 +164,17 @@ router.post('/dogs', async (req,res) =>{
 router.get('/dogs/:id', async (req,res) => {
     const {id} = req.params;
     try {
-        const response = await axios.get (`https://api.thedogapi.com/v1/breeds/${id}?api_key=${APIKEY}`);
+      const response = await axios.get(`https://api.thedogapi.com/v1/breeds/${id}?api_key=${APIKEY}`);
+      const breedData = response.data;
+  
+      // Check if breedData contains reference_image_id
+      if (!breedData.reference_image_id) {
+        throw new Error('Reference image ID not found');
+      }
+  
+      // Realizar una segunda solicitud para obtener la imagen utilizando el reference_image_id
+      const imageResponse = await axios.get(`https://api.thedogapi.com/v1/images/${breedData.reference_image_id}?api_key=${APIKEY}`);
+      const imageData = imageResponse.data;
 
         const dogId ={
             name: response.data.name,
@@ -171,8 +182,9 @@ router.get('/dogs/:id', async (req,res) => {
             weight: response.data.weight,
             life_span: response.data.life_span,
             temperament: response.data.temperament,
-            reference_image_id: response.data.reference_image_id,
-            url: response.data.url
+            reference_image_id: breedData.reference_image_id,
+            url: imageData.url
+           
         };
         res.status(200).json(dogId)
     } catch (error) {

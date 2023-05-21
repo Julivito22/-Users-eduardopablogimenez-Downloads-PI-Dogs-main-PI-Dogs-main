@@ -39,46 +39,44 @@
 
 }
 
-.patitasContainer {
-    width: 300px;
-    height: 300px;
-    position: relative;
-    perspective: 1000px;
-  }
-  
-  .patitas {
-    width: 100px;
-    height: 100px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: brown;
-    border-radius: 50%;
-    
-  }
 
-  .walk {
-    animation: walkAnimation 1s infinite;
+
+
+  .flecha-container {
+    position: relative;
+    width: 100%;
+    text-align: center;
   }
   
-  @keyframes walkAnimation {
+  .flechita {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 30px;
+    border: solid #ffffff;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    transform: rotate(45deg);
+    animation: arrowAnimation 1s infinite;
+  }
+  
+  @keyframes arrowAnimation {
     0% {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    25% {
-      transform: translate(-50%, -50%) rotate(10deg);
+      opacity: 1;
+      transform: rotate(45deg) translateY(0);
     }
     50% {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    75% {
-      transform: translate(-50%, -50%) rotate(-10deg);
+      opacity: 0;
+      transform: rotate(45deg) translateY(10px);
     }
     100% {
-      transform: translate(-50%, -50%) rotate(0deg);
+      opacity: 1;
+      transform: rotate(45deg) translateY(0);
     }
   }
+  
   
   
   

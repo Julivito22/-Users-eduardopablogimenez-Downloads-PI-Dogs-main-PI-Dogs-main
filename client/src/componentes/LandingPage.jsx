@@ -6,9 +6,12 @@ import style from './LandingPage.module.css';
 export default function LandingPage(){
     return(
         
-        <div>
+        <div className={style.landingpage}>
+            <div className={style.flecha}>
+  <div className={style.flechita}></div>
+</div>
             <div className={style.patitasContainer}>
-  <div className={`${style.dog} ${style.walk}`}></div>
+  
 </div>
             
             <Link to ="/home" >

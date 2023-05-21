@@ -1,32 +1,37 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getNameDogs } from "../actions";
+import style from './SearchBar.module.css';
 
-export default function SearchBar(){
-    const dispatch = useDispatch()
-    const [name, setName] = useState("")
+export default function SearchBar() {
+  const dispatch = useDispatch();
+  const [name, setName] = useState("");
 
-    function handleInputChange(e) {
-        e.preventDefault()
-        setName(e.target.value)
-        console.log(name)
+  useEffect(() => {
+    console.log(name); // Acción adicional después de que name se actualice
+  }, [name]);
 
-    }
+  function handleInputChange(e) {
+    e.preventDefault();
+    const newName = e.target.value;
+    setName(newName);
+  }
 
-    function handleSubmit(e){
-        e.preventDefault()
-        dispatch(getNameDogs(name))
-    }
+  function handleSubmit(e) {
+    e.preventDefault();
+    dispatch(getNameDogs(name));
+  }
 
-    return(
-        <div>
-            <input 
-            type = "text"
-            placeholder="Buscar..."
-            onChange={(e) => handleInputChange(e)}
-            />
-            <button type="submit" onClick={(e)=>handleSubmit(e)}>Buscar</button>
-        </div>
-    )
+  return (
+    <div className={style.SearchBar}>
+      <input
+        type="text"
+        placeholder="Buscar..."
+        onChange={handleInputChange}
+      />
+      <button type="submit" onClick={handleSubmit} className={style.click}>
+        Buscar
+      </button>
+    </div>
+  );
 }

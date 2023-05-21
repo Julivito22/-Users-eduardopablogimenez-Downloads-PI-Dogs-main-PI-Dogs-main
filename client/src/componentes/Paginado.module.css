@@ -1,38 +1,23 @@
-.paginado {
+.pagination {
     display: flex;
   justify-content: center;
-  padding: 10px; /* Espaciado interno */
-  margin: 10px 0;
-}
-
-.number a {
-    display: inline-block;
-    margin: 0 5px;
-    text-decoration: none;
-  }
-
-  .number a:hover {
-    text-decoration: underline; /* Subrayar los enlaces al pasar el mouse */
+  list-style: none;
+  padding: 0;
   }
   
-  .number .active {
-    font-weight: bold; /* Estilo del enlace activo */
+  .page {
+    margin: 0 5px;
   }
-
-  .number .prev,
-.number .next {
-  background-color: #ccc; /* Color de fondo de los botones */
-  color: #fff; /* Color del texto de los botones */
-  padding: 5px 10px; /* Espaciado interno de los botones */
-  border-radius: 4px; /* Bordes redondeados de los botones */
-}
-
-.number {
-    display: flex;
-    justify-content: center;
-    padding: 5px; /* Espaciado interno */
-    margin: 5px 0;
-    border-color:bisque ;
-}
-
+  
+  .pageButton {
+    background-color: #eaeaea;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .pageButton:hover {
+    background-color: #ccc;
+  }
   
