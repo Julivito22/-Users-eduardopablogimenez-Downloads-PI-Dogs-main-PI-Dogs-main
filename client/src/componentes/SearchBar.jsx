@@ -28,6 +28,7 @@ export default function SearchBar() {
         type="text"
         placeholder="Buscar..."
         onChange={handleInputChange}
+        className={style.searchBar}
       />
       <button type="submit" onClick={handleSubmit} className={style.click}>
         Buscar

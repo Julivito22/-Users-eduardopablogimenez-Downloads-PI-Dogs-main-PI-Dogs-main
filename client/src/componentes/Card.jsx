@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./Card.module.css"
 
-export default function Card({ name, image, temperaments, weight }) {
+export default function Card({ name, image, temperament, weight }) {
     const { imperial, metric } = weight;
   
     return (
@@ -10,7 +10,7 @@ export default function Card({ name, image, temperaments, weight }) {
         <img src={image.url} alt={name} className={style.imagen} />
         <div className={style.texto} >
           
-          <p>Temperaments: {`${temperaments}`}</p>
+          <p>Temperaments: {`${temperament}`}</p>
           <p>Weight: {`${imperial} lbs (${metric} kg)`}</p>
         </div>
       </div>

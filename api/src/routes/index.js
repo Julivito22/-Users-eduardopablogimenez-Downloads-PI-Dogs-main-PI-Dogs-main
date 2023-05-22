@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const axios = require ('axios');
 const {Dogs, Temperamentos} = require ("../db");
-const { Sequelize, Op } = require('sequelize');
+const { Sequelize } = require('sequelize');
 const {APIKEY} = process.env;
 
 
@@ -64,72 +64,69 @@ router.get('/dogs', async (req, res) =>{
 });
 
 
+
+
+
+
 router.get('/dogs', async (req, res) => {
-    const { name } = req.query;
-    try {
-      const dogDB = await Dogs.findAll({
-        where: {
-          name: {
-            [Op.iLike]: `%${name}%`
-          }
-        },
-        include: {
-          model: Temperamentos,
-          attributes: ['name'],
-          through: {
-            attributes: []
-          }
-        }
-      });
-  
-      const response = await axios.get(`https://api.thedogapi.com/v1/breeds/?name=${name}&api_key=${APIKEY}`);
-      console.log(response.data);
-      const dogApi = response.data.map(dog => ({
-        id: dog.id,
-        name: dog.name,
-        image: dog.image.url,
-        temperament: dog.temperament?.split(',').map(e => e.trim()) || []
-      }));
-  
-      if (dogDB.length === 0 && dogApi.length === 0) {
-        return res.status(404).json({ error: 'No hay ningún perro con ese nombre' });
-      }
-      
-      const dogs = [...dogDB, ...dogApi];
-      res.json(dogs);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: error.message });
+  try {
+    const name = req.query.name; // Obtiene el nombre del query
+    const regex = new RegExp(name, 'i'); // Crea una expresión regular para búsqueda no sensible a mayúsculas y minúsculas
+
+    // Busca las razas de perros que coinciden con el nombre en la API externa
+    const response = await axios.get(`https://api.thedogapi.com/v1/breeds/search?q=${regex}&api_key=${APIKEY}`);
+
+    const dogs = response.data;
+
+    if (dogs.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron razas de perros con ese nombre.' });
     }
-  });
+
+    return res.json(dogs);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error en el servidor.' });
+  }
+});
+
+
+
+
   
 
-  router.get('/temperaments/:temperament', async (req, res) => {
-    const { temperament } = req.params;
-  
-    try {
-      const temperamento = await Temperamentos.findOne({
-        where: {
-          name: {
-            [Op.iLike]: `%${temperament}%`
+router.get('/temperaments', async (req, res) => {
+  try {
+    const response = await axios.get('https://api.thedogapi.com/v1/breeds/');
+
+    const breeds = response.data;
+    const temperaments = [];
+
+    // Obtener los temperamentos únicos de todas las razas
+    breeds.forEach((breed) => {
+      if (breed.temperament) {
+        const breedTemperaments = breed.temperament.split(', ');
+        breedTemperaments.forEach((temp) => {
+          if (!temperaments.includes(temp)) {
+            temperaments.push(temp);
           }
-        },
-        include: [{
-          model: Dogs
-        }]
-      });
-  
-      if (!temperamento) {
-        return res.status(404).json({ error: 'Temperamento no encontrado' });
+        });
       }
-  
-      const dogs = temperamento.dogs;
-      res.status(200).json(dogs);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error al buscar perros por temperamento' });
-    }
-  });
+    });
+
+    // Guardar los temperamentos en la base de datos
+    await Temperamentos.bulkCreate(
+      temperaments.map((temp) => ({ name: temp }))
+    );
+
+    // Obtener los temperamentos guardados en la base de datos
+    const savedTemperaments = await Temperamentos.findAll();
+    res.status(200).json(savedTemperaments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener los temperamentos' });
+  }
+});
+
   
     
 

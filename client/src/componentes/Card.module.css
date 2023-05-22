@@ -21,6 +21,7 @@
   transform: translateZ(0); 
   transition: transform 0.3s ease;
   background-color: rgba(224, 220, 211, 0.78);
+  
    
      }
 
@@ -31,6 +32,11 @@
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       perspective: 1000px;
+      
+         display: flex;
+       flex-wrap: wrap;
+       justify-content: space-between;
+       
       }
       
 

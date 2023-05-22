@@ -1,25 +1,28 @@
-.SearchBar {
-    background: url(https://cdn0.iconfinder.com/data/icons/slim-square-icons-basics/100/basics-19-32.png) no-repeat 0px 5px;
+.searchBar {
+   
     background-size: 24px;
     width: 500px;
     border: transparent;
-    border-bottom: solid 1px #ccc;
+    border-bottom: solid 1px rgb(191, 126, 5);
     padding: 10px 10px 10px 30px;
     outline: none;
+    margin-left: -70%;
+    margin-top: 1%;
     
     
 }
 
 .click{
-    border: 1px solid #2e518b; 
-padding: 10px; 
-background-color: #2e518b; 
-color: #ffffff; 
-text-decoration: none; 
-text-transform: uppercase; 
-font-family: 'Helvetica', sans-serif; 
-border-radius: 50px; 
+    padding: 10px 20px;
+  background-color: #eaeaea;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
     
     
-    
+}
+
+.click:active,
+.click:focus {
+  background-color: #c0c0c0;
 }

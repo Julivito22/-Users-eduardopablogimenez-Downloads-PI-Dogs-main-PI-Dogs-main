@@ -58,8 +58,8 @@ export default function Home() {
     return (
       <div>
         <SearchBar >Buscar...</SearchBar>
-            <Link to= '/dogs'>Crear perro</Link>
-            <h1>DOGS</h1>
+            <Link to= '/dogs' className={style.dogLink}>Crear perro</Link>
+            <h1 className={style.title}>DOGS</h1>
             
             <button onClick={e=> {handleClick(e)}}>Volver a cargar todos los perros</button>
             <div>
@@ -79,7 +79,7 @@ export default function Home() {
             return (
                 <Fragment key={`dog-${index}`}>
                     <Link to={"/home/" + dog.id}>
-        <Card key={dog.id} name={dog.name} image={dog.image} temperaments={dog.temperaments} weight={dog.weight} />
+        <Card key={dog.id} name={dog.name} image={dog.image} temperament={dog.temperament} weight={dog.weight} className={style.card} />
       </Link>
                 </Fragment>
             )

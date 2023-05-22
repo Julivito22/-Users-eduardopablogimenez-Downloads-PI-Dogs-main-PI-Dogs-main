@@ -4,7 +4,7 @@
   border-color: 5px, chocolate; 
   width: 200px; 
   height: 30px;
-  border: 1px solid #ccc; /* Borde del select */
+  border: 1px solid #ccc; 
   border-radius: 4px;
 }
 
@@ -13,11 +13,11 @@ select:hover {
  }
 
  select::-ms-expand {
-    display: none; /* Ocultar la flecha en Internet Explorer y Microsoft Edge */
+    display: none; 
   }
   
   select::after {
-    content: "\25BC"; /* Carácter de flecha hacia abajo */
+    content: "\25BC"; 
     position: absolute;
     top: 50%;
     right: 10px;
@@ -30,5 +30,38 @@ select:hover {
     justify-content: center; 
   }
 
+  .dogLink {
+    position: absolute;
+    top: 20px;
+    right: 47%;
+    padding: 10px 20px;
+    background-color: #eaeaea;
+    color: rgb(12, 11, 11);
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 10%;
+    border-color: 2px rgb(180, 127, 3) ;
+  }
+  
+  .dogLink:hover {
+    background-color: #a07904;
+  }
+
+  .title {
+    font-size: 100px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  transform: perspective(800px) rotateX(20deg);
+  }
+
+  .container {
+    display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  }
   
   
