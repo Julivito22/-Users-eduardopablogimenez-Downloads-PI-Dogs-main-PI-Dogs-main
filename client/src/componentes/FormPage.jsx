@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import style from './FormPage.module.css';
+import axios from 'axios';
 
 export default function FormPage() {
   const [formData, setFormData] = useState({
@@ -13,15 +14,37 @@ export default function FormPage() {
   });
 
   const [errors, setErrors] = useState({});
+  const [temperamentos, setTemperamentos] = useState([]);
+
+  
+
+  const obtenerTemperamentos = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/temperaments');
+      const data = response.data;
+      const temperamentosAPI = data;
+      const nombresTemperamentos = temperamentosAPI.map((temperamento) => temperamento.name);
+      setTemperamentos(nombresTemperamentos || []);
+    } catch (error) {
+      console.log('Error al obtener los temperamentos:', error);
+    }
+  };
+
+  useEffect(() => {
+    obtenerTemperamentos();
+  }, []);
+
+
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleTemperamentChange = (e) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
-    setFormData({ ...formData, temperaments: selectedOptions });
+  const handleTemperamentChange = (event) => {
+    const selectedOptions = Array.from(event.target.selectedOptions, (option) => option.value);
+    setFormData({ ...formData, temperament: selectedOptions });
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -157,23 +180,31 @@ export default function FormPage() {
         {errors.lifespan && <p className={style.error}>{errors.lifespan}</p>}
       </div>
       <div className={style.formField}>
-        <label htmlFor="temperaments" className={style.formLabel}>
-          Temperamentos:
-        </label>
-        <select
-          id="temperaments"
-          name="temperaments"
-          multiple
-          value={formData.temperament}
-          onChange={handleTemperamentChange}
-          className={style.formInput}
-        >
-          <option value="temperament1">Temperamento 1</option>
-          <option value="temperament2">Temperamento 2</option>
-          <option value="temperament3">Temperamento 3</option>
-        </select>
-        {errors.temperament && <p className={style.error}>{errors.temperament}</p>}
-      </div>
+          <label htmlFor="temperaments" className={style.formLabel}>
+            Temperamentos:
+          </label>
+          <select
+  id="temperaments"
+  name="temperaments"
+  multiple
+  value={formData.temperament}
+  onChange={handleTemperamentChange}
+  className={style.formInput}
+>
+  {temperamentos.map((temperamento, index) => {
+    if (typeof temperamento === 'string' && temperamento.trim() !== '') {
+      return (
+        <option key={`${temperamento}_${index}`} value={temperamento}>
+          {temperamento}
+        </option>
+      );
+    }
+    return null;
+  })}
+</select>
+
+          {errors.temperament && <p className={style.error}>{errors.temperament}</p>}
+        </div>
       <button type="submit" className={style.submitButton}>CREAR</button>
     </form>
   </div>
