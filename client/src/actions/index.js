@@ -5,6 +5,7 @@ export const FILTER_CREATED = 'FILTER_CREATED';
 export const SORT_DOGS_BY_ALPHABET = 'SORT_DOGS_BY_ALPHABET';
 export const SORT_DOGS_BY_WEIGHT= 'SORT_DOGS_BY_WEIGHT';
 export const GET_DOG_DETAIL='GET_DOG_DETAIL';
+export const SET_PERROS_FILTRADOS='SET_PERROS_FILTRADOS';
 
 export function getDogs(){
     return async function(dispatch){
@@ -74,5 +75,12 @@ export const sortDogsByAlphabet = (order) => {
       } catch (error) {
         console.log(error);
       }
+    };
+  };
+
+  export const setPerrosFiltrados = (perrosFiltrados) => {
+    return {
+      type: 'SET_PERROS_FILTRADOS',
+      payload: perrosFiltrados,
     };
   };

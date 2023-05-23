@@ -3,7 +3,8 @@
 const initialState = {
     dogs: [],
     allDogs: [],
-    filteredDogs: []
+    filteredDogs: [],
+    temperamentos: []
 }
 
 function rootReducer(state = initialState, action) {
@@ -84,6 +85,21 @@ function rootReducer(state = initialState, action) {
         ...state,
         loading: false,
         error: action.payload,
+      };
+      case 'SET_PERROS':
+      return {
+        ...state,
+        perros: action.payload,
+      };
+    case 'SET_TEMPERAMENTOS':
+      return {
+        ...state,
+        temperamentos: action.payload,
+      };
+    case 'SET_PERROS_FILTRADOS':
+      return {
+        ...state,
+        perrosFiltrados: action.payload,
       };
     default:
       return state;
