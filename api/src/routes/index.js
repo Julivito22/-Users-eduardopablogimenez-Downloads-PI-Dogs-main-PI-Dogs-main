@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const axios = require ('axios');
 const {Dogs, Temperamentos} = require ("../db");
-const { Sequelize } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 const {APIKEY} = process.env;
 
 
@@ -68,27 +68,50 @@ router.get('/dogs', async (req, res) =>{
 
 
 
-router.get('/dogs', async (req, res) => {
+router.get('/dogs/name', async (req, res) => {
+  const {name} = req.query;
   try {
-    const name = req.query.name; // Obtiene el nombre del query
-    const regex = new RegExp(name, 'i'); // Crea una expresión regular para búsqueda no sensible a mayúsculas y minúsculas
+    const dogsDB = await Dogs.findAll({
+      where: {
+        name: {
+          [Op.iLike]: `%${name}%`
+        }
+      },
+      include: {
+        model: Temperamentos,
+        attributes: ['name'],
+        through: {
+          attributes: []
+        }
+      }
+    });
 
-    // Busca las razas de perros que coinciden con el nombre en la API externa
-    const response = await axios.get(`https://api.thedogapi.com/v1/breeds/search?q=${regex}&api_key=${APIKEY}`);
+    
 
-    const dogs = response.data;
+    const response = await axios.get(`https://api.thedogapi.com/v1/breeds/search?q=${name}&api_key=${APIKEY}`);
+    const dogApi = await Promise.all(response.data.map(async dog => {
+      const imageResponse = await axios.get(`https://api.thedogapi.com/v1/images/search?breed_id=${dog.id}&api_key=${APIKEY}`);
+      const imageData = imageResponse.data[0];
+      return {
+        id: dog.id,
+        name: dog.name,
+        weight: dog.weight,
+        height: dog.height,
+        image: imageData.url,
+        temperament: dog.temperament?.split(',').map(t => t.trim()) || []
+      };
+    }));
+    const dogs = [...dogsDB, ...dogApi];
 
     if (dogs.length === 0) {
-      return res.status(404).json({ message: 'No se encontraron razas de perros con ese nombre.' });
+      return res.status(404).json({error: 'No se encontraron razas de perro con ese nombre'});
     }
-
-    return res.json(dogs);
+    res.json(dogs);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Error en el servidor.' });
+    console.log(error);
+    res.status(500).json({error: 'Error server'});
   }
 });
-
 
 
 

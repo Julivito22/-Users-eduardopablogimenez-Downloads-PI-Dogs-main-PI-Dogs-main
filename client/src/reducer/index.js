@@ -4,7 +4,8 @@ const initialState = {
     dogs: [],
     allDogs: [],
     filteredDogs: [],
-    temperamentos: []
+    temperamentos: [],
+    perrosFiltrados: [],
 }
 
 function rootReducer(state = initialState, action) {
@@ -20,18 +21,26 @@ function rootReducer(state = initialState, action) {
           ...state,
           dogs: action.payload,
         }
-      case 'FILTER_BY_TEMPERAMENT':
-        const allDogs = state.allDogs;
-        const temperamentFiltered =
-          action.payload === 'All'
-            ? allDogs
-            : allDogs.filter((el) =>
-                el.temperaments.includes(action.payload)
-              );
+        case 'FILTER_BY_TEMPERAMENT':
+      const temperamentoSeleccionado = action.payload;
+      if (state.allDogs && state.allDogs.length > 0) {
+        const perrosFiltrados = state.allDogs.filter((perro) => {
+          const temperamentos = perro.temperament;
+          if (temperamentos && Array.isArray(temperamentos)) {
+            const temperamentosFormateados = temperamentos.map((temperamento) =>
+              temperamento.trim()
+            );
+            return temperamentosFormateados.includes(temperamentoSeleccionado);
+          }
+          return false;
+        });
+
         return {
           ...state,
-          dogs: temperamentFiltered,
-        }
+          filteredDogs: perrosFiltrados,
+        };
+      }
+          return state;
       case 'FILTER_CREATED':
         const allDog = state.allDogs;
         const createdFilter =

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { filterDogsByTemperament } from '../actions';
 
 export default function Ordenamiento({ handleOrdenAlfabetico, handleOrdenPeso }) {
@@ -9,28 +9,32 @@ export default function Ordenamiento({ handleOrdenAlfabetico, handleOrdenPeso })
   
   
   const [temperamentos, setTemperamentos] = useState([]);
+  
 
   const dispatch = useDispatch();
+  const filteredDogs = useSelector((state) => state.filteredDogs);
+
+  
 
   useEffect(() => {
-    obtenerPerros(); // Realiza la solicitud a la API cuando el componente se monta
+    obtenerPerros(); 
   }, []);
 
   const obtenerPerros = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/temperaments/'); // Reemplaza 'URL_DE_LA_API' con la URL real de la API externa
+      const response = await axios.get('http://localhost:3001/temperaments/');
       const data = response.data;
-
-      // Almacena los temperamentos en el estado como un objeto con propiedades 'id' y 'name'
-      const temperamentosFormateados = data.map((temperamento) => ({
-        id: temperamento.id,
-        name: temperamento.name
-      }));
-      setTemperamentos(temperamentosFormateados);
+  
+      
+      const temperamentosUnicos = data.map((temperamento) => temperamento.name);
+      setTemperamentos(temperamentosUnicos);
+      
     } catch (error) {
-      console.log('Error al obtener los temperamentos:', error);
+      console.log('Error al obtener los perros:', error);
     }
   };
+
+  
 
   const handleChangeOrdenAlfabetico = (event) => {
     const tipoOrden = event.target.value;
@@ -47,12 +51,6 @@ export default function Ordenamiento({ handleOrdenAlfabetico, handleOrdenPeso })
   const handleFiltrarTemperamento = (temperamentoSeleccionado) => {
     dispatch(filterDogsByTemperament(temperamentoSeleccionado));
   };
-  
-  
-  
-  
-  
-  
 
   return (
     <div>
@@ -72,10 +70,20 @@ export default function Ordenamiento({ handleOrdenAlfabetico, handleOrdenPeso })
       <span>Filtrar por temperamento:</span>
       <select onChange={(event) => handleFiltrarTemperamento(event.target.value)}>
         <option value="">Seleccionar</option>
-        {temperamentos.map((temperamento) => (
-          <option key={temperamento.id} value={temperamento.id}>{temperamento.name}</option>
+        {temperamentos.map((temperamento, index) => (
+          <option key={index} value={temperamento}>
+            {temperamento}
+          </option>
         ))}
       </select>
+
+      {filteredDogs.length > 0 && (
+        <ul>
+          {filteredDogs.map((perro) => (
+            <li key={perro.id}>{perro.name}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

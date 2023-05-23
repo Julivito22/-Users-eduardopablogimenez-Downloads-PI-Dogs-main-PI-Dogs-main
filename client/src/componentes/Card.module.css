@@ -36,6 +36,8 @@
          display: flex;
        flex-wrap: wrap;
        justify-content: space-between;
+       max-width: 400px; 
+  margin: 0 auto; 
        
       }
       

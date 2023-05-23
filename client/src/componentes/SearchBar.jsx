@@ -8,7 +8,7 @@ export default function SearchBar() {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    console.log(name); // Acción adicional después de que name se actualice
+    console.log(name); 
   }, [name]);
 
   function handleInputChange(e) {
@@ -23,16 +23,16 @@ export default function SearchBar() {
   }
 
   return (
-    <div className={style.SearchBar}>
+    <form onSubmit={handleSubmit} className={style.SearchBar}>
       <input
         type="text"
         placeholder="Buscar..."
         onChange={handleInputChange}
         className={style.searchBar}
       />
-      <button type="submit" onClick={handleSubmit} className={style.click}>
+      <button type="submit" className={style.click}>
         Buscar
       </button>
-    </div>
+    </form>
   );
 }

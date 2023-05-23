@@ -22,7 +22,7 @@ select:hover {
     top: 50%;
     right: 10px;
     transform: translateY(-50%);
-    color: #333; /* Color de la flecha */
+    color: rgb(177, 120, 4); 
   }
 
   .barra {
@@ -63,5 +63,9 @@ select:hover {
   flex-wrap: wrap;
   justify-content: space-between;
   }
+
+  .cardLink {
+    display: inline-block;
+     }
   
   

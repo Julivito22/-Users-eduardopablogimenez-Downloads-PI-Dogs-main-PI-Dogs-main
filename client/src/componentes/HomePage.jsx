@@ -78,8 +78,9 @@ export default function Home() {
           {currentDogs.map((dog, index) => {
             return (
                 <Fragment key={`dog-${index}`}>
-                    <Link to={"/home/" + dog.id}>
+                    <Link to={"/home/" + dog.id} className={style.cardLink}>
         <Card key={dog.id} name={dog.name} image={dog.image} temperament={dog.temperament} weight={dog.weight} className={style.card} />
+        
       </Link>
                 </Fragment>
             )
