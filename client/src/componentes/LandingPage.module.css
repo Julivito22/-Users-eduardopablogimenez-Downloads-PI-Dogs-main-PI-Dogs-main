@@ -36,46 +36,20 @@
     margin-left: 25%;
     margin-right: 25%;
     margin-top: 15%;
+    font-weight: bolder;
 
 }
 
 
 
 
-  .flecha-container {
-    position: relative;
-    width: 100%;
-    text-align: center;
-  }
   
-  .flechita {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 30px;
-    height: 30px;
-    border: solid #ffffff;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    transform: rotate(45deg);
-    animation: arrowAnimation 1s infinite;
-  }
-  
-  @keyframes arrowAnimation {
-    0% {
-      opacity: 1;
-      transform: rotate(45deg) translateY(0);
-    }
-    50% {
-      opacity: 0;
-      transform: rotate(45deg) translateY(10px);
-    }
-    100% {
-      opacity: 1;
-      transform: rotate(45deg) translateY(0);
-    }
-  }
+
+.patitasContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 10%;
+}
   
   
   

@@ -1,8 +1,8 @@
 import React, { Fragment } from "react";
 import {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import { filterCreated, getDogs, sortDogsByAlphabet, sortDogsByWeight } from "../actions";
-import { Link } from "react-router-dom";
+import {  filterDogsByTemperament, getDogs, sortDogsByAlphabet, sortDogsByWeight, filterCreated } from "../actions";
+import { Link, useNavigate } from "react-router-dom";
 import Card from "./Card";
 import Paginado from "./Paginado";
 import style from './HomePage.module.css';
@@ -13,92 +13,134 @@ import Ordenamiento from './Ordenamiento';
 
 
 export default function Home() {
-   
-    const dispatch = useDispatch();
-    const allDogs = useSelector((state) => state.dogs);
-    const [currentPage, setCurrentPage] = useState(1);
-    const dogsPerPage = 8;
-   
-    
+  const dispatch = useDispatch();
+  const dogs = useSelector((state) => state.dogs);
+  const filteredDogs = useSelector((state) => state.filteredDogs);
+  const navigate = useNavigate();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const dogsPerPage = 8;
+
+  const [filterOptions, setFilterOptions] = useState({
+    name: "",
+    temperament: "",
+    origin: "",
+  });
+
+  const indexOfLastDog = currentPage * dogsPerPage;
+  const indexOfFirstDog = indexOfLastDog - dogsPerPage;
+  const currentDogs =
+    filteredDogs.length > 0
+      ? filteredDogs
+      : dogs.slice(indexOfFirstDog, indexOfLastDog);
+
+  const paginado = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  useEffect(() => {
+    dispatch(getDogs());
+  }, [dispatch]);
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    setFilterOptions({
+      name: "",
+      temperament: "",
+      origin: "",
+    });
+    dispatch(getDogs());
+  };
+
+  function handleOrdenAlfabetico (orden) {
+    dispatch(sortDogsByAlphabet(orden));
+  };
+
+  function handleOrdenPeso (orden) {
+    dispatch(sortDogsByWeight(orden));
+  };
 
   
-    const indexOfLastDog = currentPage * dogsPerPage;
-    const indexOfFirstDog = indexOfLastDog - dogsPerPage;
-    const currentDogs = allDogs.slice(indexOfFirstDog, indexOfLastDog);
-  
-    const paginado = (pageNumber) => {
-      setCurrentPage(pageNumber);
-    };
+
+  function handleFilterTemperament (e) {
+    const value = e.target.value;
+    setFilterOptions({
+      ...filterOptions,
+      temperament: value,
+    });
+    dispatch(filterDogsByTemperament(value));
+  };
 
 
-    
+  function handleFilterCreated (e){
+    dispatch(filterCreated(e.target.value));
+  }; 
+ 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
   
-    useEffect(() => {
-      dispatch(getDogs());
-    }, [dispatch]);
-  
-    function handleClick(e) {
-      e.preventDefault();
-      dispatch(getDogs());
-    }
-  
-    function handleFilterCreated(e) {
-      dispatch(filterCreated(e.target.value));
-    }
 
-    const handleOrdenAlfabetico = (orden) => {
-        dispatch(sortDogsByAlphabet(orden));
-      };
-    
-      const handleOrdenPeso = (orden) => {
-        dispatch(sortDogsByWeight(orden));
-      };
-    
   
-    return (
-      <div>
-        <SearchBar >Buscar...</SearchBar>
-            <Link to= '/dogs' className={style.dogLink}>Crear perro</Link>
-            <h1 className={style.title}>DOGS</h1>
-            
-            <button onClick={e=> {handleClick(e)}}>Volver a cargar todos los perros</button>
-            <div>
-            
-            <Ordenamiento handleOrdenAlfabetico={handleOrdenAlfabetico} handleOrdenPeso={handleOrdenPeso} />
-            <span>Filtrar por:</span>
-                <select onChange={e => handleFilterCreated(e)} className={style.select}>
-                
-                    <option value=''>Seleccionar</option>
-                    <option value='created'>Creados</option>
-                    <option value='api'>Api</option>
-                </select>
-                
-                <Paginado dogsPerPage={dogsPerPage} totalDogs={allDogs.length} paginado={paginado} />
-        <div className="dog-list">
-          {currentDogs.map((dog, index) => {
-            return (
-                <Fragment key={`dog-${index}`}>
-                    <Link to={"/home/" + dog.id} className={style.cardLink}>
-        <Card key={dog.id} name={dog.name} image={dog.image} temperament={dog.temperament} weight={dog.weight} className={style.card} />
-        
+
+  return (
+    <div>
+      <SearchBar>Buscar...</SearchBar>
+      <Link to="/dogs" className={style.dogLink}>
+        Crear perro
       </Link>
-                </Fragment>
-            )
-            }
-          )}
+      
+      <button onClick={handleGoBack} className={style.back}>LOG OUT</button>
+      
+      
+      <h1 className={style.title} >DOGS</h1>
+      <img src="/images/perrito.png" alt="Perro" className={style.dog} />
+    
+      
+      
+
+      
+      <div>
+        <Ordenamiento
+          handleOrdenAlfabetico={handleOrdenAlfabetico}
+          handleOrdenPeso={handleOrdenPeso}
+          filteredDogs={handleFilterTemperament}
+          handleFilterCreated={handleFilterCreated}
+        />
+        <button onClick={(e) => handleClick(e)} className={style.cargar} >VOLVER A CARGAR TODOS LOS PERROS</button>
+
+
+        
+
+        <Paginado dogsPerPage={dogsPerPage} totalDogs={dogs.length} paginado={paginado} />
+       
+
+        <div className="dog-list">
+        {currentDogs.map((dog, index) => {
+    return (
+      <Fragment key={`dog-${index}`}>
+        <Link to={"/home/" + dog.id} className={style.cardLink}>
+          <Card
+            key={dog.id} // Agrega una clave única aquí
+            name={dog.name}
+            image={dog.image}
+            temperament={dog.temperament}
+            weight={dog.weight}
+            className={style.card}
+          />
+        </Link>
+      </Fragment>
+            );
+          })}
         </div>
       </div>
-      </div>
+    </div>
     );
   }
   
 
 
     
-    //function handleFilterTemperament(e){
-      //dispatch(filterDogsByTemperament(e.target.value))
-    //}
-
     
 
     

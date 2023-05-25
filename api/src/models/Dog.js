@@ -15,11 +15,11 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     height: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL,
       allowNull: false
     },
     weight: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL,
       allowNull: false
     },
     life_span: {
@@ -33,7 +33,8 @@ module.exports = (sequelize) => {
     createdInDb: {
       type: DataTypes.DATE,
       allowNull: false,
-      default: true,
+      defaultValue: DataTypes.NOW,
+
     }
   });
 };

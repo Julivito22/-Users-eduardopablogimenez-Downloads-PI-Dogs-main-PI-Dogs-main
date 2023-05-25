@@ -6,20 +6,25 @@ export default function CrearPerroPage() {
   const [name, setName] = useState('');
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
-  // Otros estados para los demás campos del formulario
+  const [createdDog, setCreatedDog] = useState(null); 
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       const response = await axios.post('http://localhost:3001/dogs/', {
-        name,
-        height,
-        weight,
+        name: name,
+        height: `Min: ${height.min}cm Max: ${height.max}cm`,
+        weight: `Min: ${weight.min}kg Max: ${weight.max}kg`,
+        life_span: life_span,
+        image: image,
+        temperament: temperament,
       });
       
       const createdDog = response.data;
       
+      setCreatedDog(createdDog); // Guardar el perro creado en el estado
       
       console.log('Perro creado:', createdDog);
     } catch (error) {
@@ -67,6 +72,24 @@ export default function CrearPerroPage() {
         
         <button type="submit" className={style.submitButton}>Crear Perro</button>
       </form>
+
+      {createdDog && (
+        <div className={style.createdDog}>
+          <h2>Perro Creado:</h2>
+          <p>Nombre: {createdDog.name}</p>
+          <p>Altura: {createdDog.height}</p>
+          <p>Peso: {createdDog.weight}</p>
+          <p>Temperaments: {createdDog.temperament}</p>
+          {/* Mostrar otros datos del perro si es necesario */}
+        </div>
+      )}
     </div>
   );
 }
+
+
+
+
+
+
+

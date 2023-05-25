@@ -49,19 +49,46 @@ const getAllDogs = async () =>{
 }
 
 
-router.get('/dogs', async (req, res) =>{
-    const name = req.query.name
-    let dogsTotal = await getAllDogs();
-    
-    if(name){
-        let dogsName = dogsTotal.filter(el => el.name.toLowerCase().includes(name.toLowerCase))
-        dogsName.length ?
-        res.status(200).send(dogsName) :
-        res.status(404).send('No existe la raza');
-    } else{
-        res.status(200).send(dogsTotal)
+router.get('/dogs', async (req, res) => {
+  const { name, temperament, origin } = req.query;
+
+  let dogsTotal = await getAllDogs();
+
+  if (name) {
+    let dogsName = dogsTotal.filter(el => el.name.toLowerCase().includes(name.toLowerCase()));
+    if (dogsName.length) {
+      dogsTotal = dogsName;
+    } else {
+      return res.status(404).send('No existe la raza');
     }
+  }
+
+  if (temperament) {
+    let dogsTemperament = dogsTotal.filter(el => el.temperament.toLowerCase().includes(temperament.toLowerCase()));
+    if (dogsTemperament.length) {
+      dogsTotal = dogsTemperament;
+    } else {
+      return res.status(404).send('No se encontraron perros con ese temperamento');
+    }
+  }
+
+  if (origin) {
+    let dogsOrigin;
+    if (origin === 'api') {
+      dogsOrigin = dogsTotal.filter(el => el.createdInDb === false);
+    } else if (origin === 'database') {
+      dogsOrigin = dogsTotal.filter(el => el.createdInDb === true);
+    }
+    if (dogsOrigin && dogsOrigin.length) {
+      dogsTotal = dogsOrigin;
+    } else {
+      return res.status(404).send('No se encontraron perros con ese origen');
+    }
+  }
+
+  res.status(200).json(dogsTotal);
 });
+
 
 
 
@@ -85,8 +112,6 @@ router.get('/dogs/name', async (req, res) => {
         }
       }
     });
-
-    
 
     const response = await axios.get(`https://api.thedogapi.com/v1/breeds/search?q=${name}&api_key=${APIKEY}`);
     const dogApi = await Promise.all(response.data.map(async dog => {
@@ -154,31 +179,41 @@ router.get('/temperaments', async (req, res) => {
     
 
 
-router.post('/dogs', async (req,res) =>{
-    const { name, height, weight, life_span, image, temperament, createdInDb } = req.body;
-    
+router.post('/dogs', async (req, res) => {
+  const dogsData = req.body;
 
-  // Crea un nuevo objeto dog con los datos
-  const dog = {
-    name: 'Tita',
-    height: 60,
-    weight: 80,
-    life_span:"10-14 years",
-    image: "file:///Users/eduardopablogimenez/Desktop/IMG_0342.JPG",
-    temperament: "Curious, Playful, Adventurous, Active, Fun-loving",
-    createdInDb: new Date()
-  };
+  // Verifica si dogsData es una matriz antes de continuar
+  if (!Array.isArray(dogsData)) {
+    return res.status(400).json({ error: 'El cuerpo de la solicitud debe ser una matriz de perros' });
+  }
 
   try {
-    // Guarda el objeto dog en la base de datos utilizando Sequelize
-    const createdDog = await Dogs.create(dog);
-    res.status(200).json(createdDog); // Devuelve el objeto dog creado en la respuesta
+    // Recorre los datos de los perros recibidos en el cuerpo de la solicitud
+    for (const dogData of dogsData) {
+      const { name, height, weight, life_span, image, temperament } = dogData;
+
+      const dog = {
+        name: name,
+        height: `Min: ${height.min}cm Max: ${height.max}cm`,
+        weight: `Min: ${weight.min}kg Max: ${weight.max}kg`,
+        life_span: life_span,
+        image: image,
+        temperament: temperament,
+        createdInDb: new Date()
+      };
+
+      // Guarda el objeto dog en la base de datos utilizando Sequelize
+      const createdDog = await Dogs.create(dog);
+      console.log(`Perro creado con ID: ${createdDog.id}`);
+    }
+
+    res.status(200).json({ message: 'Perros creados exitosamente' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Error al crear el perro' });
+    res.status(500).json({ error: 'Error al crear los perros' });
   }
-    
 });
+
 
 
 router.get('/dogs/:id', async (req,res) => {

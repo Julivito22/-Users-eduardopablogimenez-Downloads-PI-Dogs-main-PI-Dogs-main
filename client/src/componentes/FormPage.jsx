@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import style from './FormPage.module.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function FormPage() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export default function FormPage() {
 
   const [errors, setErrors] = useState({});
   const [temperamentos, setTemperamentos] = useState([]);
+  const navigate = useNavigate();
 
   
 
@@ -90,9 +92,16 @@ export default function FormPage() {
     }
   };
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   return (
+    <div>
+    <button onClick={handleGoBack} className={style.back}>VOLVER</button>
     
     <div className={`${style.container} ${style.boldText} ${style.colorBorder}`}>
+     
     <h1 className={`${style.container} ${style.boldText}`}>CREA TU PERRO</h1>
     <form className={style.form} onSubmit={handleSubmit}>
       <div className={style.formField}>
@@ -207,6 +216,7 @@ export default function FormPage() {
         </div>
       <button type="submit" className={style.submitButton}>CREAR</button>
     </form>
+  </div>
   </div>
   );
 }

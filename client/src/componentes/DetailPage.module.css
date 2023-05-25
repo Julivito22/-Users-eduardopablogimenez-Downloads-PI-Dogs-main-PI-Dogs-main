@@ -22,3 +22,62 @@
    
 
 }
+
+
+  
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10%;
+  margin-left: 45%;
+  width: 200px; /* Tamaño deseado del contenedor */
+  height: 200px;
+}
+
+.dog {
+  animation: rotate 2s linear infinite;
+  transform-origin: center;
+  transform: scale(0.5);
+  width: 100%; 
+  height: auto; 
+
+
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+  
+  .back {
+    display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #eaeaea;
+      border: none;
+      border-radius: 4px;
+      color: rgb(1, 1, 1);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-right: -70%;
+      margin-top: 3%;
+      font-style:initial;
+  }
+  
+  .back:hover {
+    background-color: rgb(179, 127, 6);
+  }
+  
+  .back:focus {
+    outline: none;
+  }
+  
+  
