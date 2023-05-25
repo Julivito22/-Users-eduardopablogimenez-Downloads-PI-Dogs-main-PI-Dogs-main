@@ -97,12 +97,16 @@ export default function FormPage() {
   };
 
   return (
-    <div>
+    <div className={style.huellitas}>
+    <div >
     <button onClick={handleGoBack} className={style.back}>VOLVER</button>
+   
+    </div>
     
     <div className={`${style.container} ${style.boldText} ${style.colorBorder}`}>
      
     <h1 className={`${style.container} ${style.boldText}`}>CREA TU PERRO</h1>
+    <img src="/images/caritaperro1.png" alt="Perro" className={style.dog} />
     <form className={style.form} onSubmit={handleSubmit}>
       <div className={style.formField}>
         <label htmlFor="name" className={style.formLabel}>
@@ -206,6 +210,7 @@ export default function FormPage() {
         <option key={`${temperamento}_${index}`} value={temperamento}>
           {temperamento}
         </option>
+        
       );
     }
     return null;

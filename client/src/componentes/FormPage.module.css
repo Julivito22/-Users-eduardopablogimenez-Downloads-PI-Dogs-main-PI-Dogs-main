@@ -8,6 +8,7 @@
     border-radius: 30px;
     margin-top: 5%;
     
+    
   }
   
   .form {
@@ -80,3 +81,13 @@
   .back:focus {
     outline: none;
   }
+
+
+  .dog{
+    width: 100px;
+    margin-top: -10%;
+  }
+
+
+ 
+  

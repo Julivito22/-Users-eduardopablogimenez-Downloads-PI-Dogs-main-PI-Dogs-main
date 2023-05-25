@@ -143,19 +143,20 @@ router.get('/dogs/name', async (req, res) => {
   
 
 router.get('/temperaments', async (req, res) => {
+  
   try {
     const response = await axios.get('https://api.thedogapi.com/v1/breeds/');
 
     const breeds = response.data;
-    const temperaments = [];
+    const temperament = [];
 
     // Obtener los temperamentos únicos de todas las razas
     breeds.forEach((breed) => {
       if (breed.temperament) {
         const breedTemperaments = breed.temperament.split(', ');
         breedTemperaments.forEach((temp) => {
-          if (!temperaments.includes(temp)) {
-            temperaments.push(temp);
+          if (!temperament.includes(temp)) {
+            temperament.push(temp);
           }
         });
       }
@@ -163,7 +164,7 @@ router.get('/temperaments', async (req, res) => {
 
     // Guardar los temperamentos en la base de datos
     await Temperamentos.bulkCreate(
-      temperaments.map((temp) => ({ name: temp }))
+      temperament.map((temp) => ({ name: temp }))
     );
 
     // Obtener los temperamentos guardados en la base de datos
@@ -190,20 +191,31 @@ router.post('/dogs', async (req, res) => {
   try {
     // Recorre los datos de los perros recibidos en el cuerpo de la solicitud
     for (const dogData of dogsData) {
-      const { name, height, weight, life_span, image, temperament } = dogData;
+      const { id, name, height, weight, life_span, image, temperament } = dogData;
 
-      const dog = {
+      // Validar los valores de altura y peso
+      const minHeight = parseFloat(height.min);
+      const maxHeight = parseFloat(height.max);
+      const minWeight = parseFloat(weight.min);
+      const maxWeight = parseFloat(weight.max);
+
+      // Verificar si los valores de altura y peso son numéricos válidos
+      if (isNaN(minHeight) || isNaN(maxHeight) || isNaN(minWeight) || isNaN(maxWeight)) {
+        return res.status(400).json({ error: 'Los valores de altura y peso deben ser numéricos' });
+      }
+
+      // Guarda el objeto dog en la base de datos utilizando Sequelize
+      const createdDog = await Dogs.create({
+        id: id,
         name: name,
-        height: `Min: ${height.min}cm Max: ${height.max}cm`,
-        weight: `Min: ${weight.min}kg Max: ${weight.max}kg`,
+        height: minHeight,
+        weight: minWeight,
         life_span: life_span,
         image: image,
         temperament: temperament,
         createdInDb: new Date()
-      };
+      });
 
-      // Guarda el objeto dog en la base de datos utilizando Sequelize
-      const createdDog = await Dogs.create(dog);
       console.log(`Perro creado con ID: ${createdDog.id}`);
     }
 
@@ -216,11 +228,13 @@ router.post('/dogs', async (req, res) => {
 
 
 
+
 router.get('/dogs/:id', async (req,res) => {
     const {id} = req.params;
     try {
       const response = await axios.get(`https://api.thedogapi.com/v1/breeds/${id}?api_key=${APIKEY}`);
       const breedData = response.data;
+      
   
       // Check if breedData contains reference_image_id
       if (!breedData.reference_image_id) {
@@ -241,6 +255,7 @@ router.get('/dogs/:id', async (req,res) => {
             url: imageData.url
            
         };
+        console.log(dogId);
         res.status(200).json(dogId)
     } catch (error) {
         console.error(error);

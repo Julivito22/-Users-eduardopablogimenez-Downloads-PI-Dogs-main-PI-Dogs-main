@@ -8,10 +8,11 @@ export default function DetailPage() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const dog = useSelector((state) => state.dogDetail);
+  const createdDog = useSelector((state) => state.createdDog);
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(getDogDetail(id));
+    dispatch(getDogDetail(id)); 
   }, [dispatch, id]);
 
   if (!dog) {
@@ -34,7 +35,7 @@ export default function DetailPage() {
       <div className={style.text}>
         
         <h2>{dog.name}</h2>
-        <p>ID: {dog.id}</p>
+        <p>ID:  {id}</p>
         <p>Height: {dog.height.imperial} ({dog.height.metric})</p>
 <p>Weight: {dog.weight.imperial} ({dog.weight.metric})</p>
 <p>Temperamentos: {dog.temperament}</p>
@@ -42,6 +43,16 @@ export default function DetailPage() {
         
         <p>Life Span: {dog.life_span}</p>
       </div>
+      {createdDog && (
+        <div className={style.createdDog}>
+          <h2>Perro Creado:</h2>
+          <p>Nombre: {createdDog.name}</p>
+          <p>Altura: {createdDog.height}</p>
+          <p>Peso: {createdDog.weight}</p>
+          <p>Temperamentos: {createdDog.temperament}</p>
+        </div>
+      )}
     </div>
   );
 }
+    

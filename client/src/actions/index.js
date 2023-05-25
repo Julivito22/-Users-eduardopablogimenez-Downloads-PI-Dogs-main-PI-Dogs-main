@@ -39,20 +39,12 @@ export function getNameDogs(name) {
   };
 }
 
-export function filterDogsByTemperament(temperamento) {
-  return (dispatch, getState) => {
-    const { dogs } = getState();
-    const filteredDogs = dogs.filter((dog) => {
-      const temperamentos = dog.temperament;
-      if (temperamentos && Array.isArray(temperamentos)) {
-        return temperamentos.includes(temperamento);
-      }
-      return false;
-    });
-    dispatch({ type: FILTER_BY_TEMPERAMENT, payload: filteredDogs });
+export const filterDogsByTemperament = (temperament) => {
+  return {
+    type: FILTER_BY_TEMPERAMENT,
+    payload: temperament,
   };
-}
-
+};
 export function filterCreated(payload) {
   return {
     type: FILTER_CREATED,

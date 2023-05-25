@@ -21,23 +21,16 @@ function rootReducer(state = initialState, action) {
         ...state,
         dogs: action.payload,
       };
-    case 'FILTER_BY_TEMPERAMENT':
-      const temperamentoSeleccionado = action.payload;
-      if (state.allDogs && state.allDogs.length > 0) {
-        const filteredDogs = state.allDogs.filter((dog) => {
-          const temperamentos = dog.temperament;
-          if (temperamentos && Array.isArray(temperamentos)) {
-            return temperamentos.includes(temperamentoSeleccionado);
-          }
-          return false;
-        });
+      case 'FILTER_DOGS_BY_TEMPERAMENT':
+  const filteredDogsByTemperament = state.dogs.filter((dog) => {
+    const temperaments = dog.temperament.split(',').map((t) => t.trim());
+    return temperaments.includes(action.payload.trim());
+  });
+  return {
+    ...state,
+    filteredDogs: filteredDogsByTemperament,
+  };
 
-        return {
-          ...state,
-          filteredDogs: filteredDogs,
-        };
-      }
-      return state;
     case 'FILTER_CREATED':
       const allDog = state.allDogs;
       const createdFilter =
