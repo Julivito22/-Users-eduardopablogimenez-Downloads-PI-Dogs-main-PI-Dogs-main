@@ -143,14 +143,11 @@ router.get('/dogs/name', async (req, res) => {
   
 
 router.get('/temperaments', async (req, res) => {
-  
   try {
     const response = await axios.get('https://api.thedogapi.com/v1/breeds/');
 
     const breeds = response.data;
     const temperament = [];
-
-    // Obtener los temperamentos únicos de todas las razas
     breeds.forEach((breed) => {
       if (breed.temperament) {
         const breedTemperaments = breed.temperament.split(', ');
@@ -161,13 +158,12 @@ router.get('/temperaments', async (req, res) => {
         });
       }
     });
-
-    // Guardar los temperamentos en la base de datos
-    await Temperamentos.bulkCreate(
-      temperament.map((temp) => ({ name: temp }))
+    const existingTemperaments = await Temperamentos.findAll();
+const existingTemperamentNames = existingTemperaments.map((temp) => temp.name);
+const newTemperaments = temperament.filter((temp) => !existingTemperamentNames.includes(temp));
+      await Temperamentos.bulkCreate(
+      newTemperaments.map((temp) => ({ name: temp }))
     );
-
-    // Obtener los temperamentos guardados en la base de datos
     const savedTemperaments = await Temperamentos.findAll();
     res.status(200).json(savedTemperaments);
   } catch (error) {
@@ -182,29 +178,26 @@ router.get('/temperaments', async (req, res) => {
 
 router.post('/dogs', async (req, res) => {
   const dogsData = req.body;
+  
 
-  // Verifica si dogsData es una matriz antes de continuar
-  if (!Array.isArray(dogsData)) {
-    return res.status(400).json({ error: 'El cuerpo de la solicitud debe ser una matriz de perros' });
-  }
+ //if (!Array.isArray(dogsData)) {
+   //return res.status(400).json({ error: 'El cuerpo de la solicitud debe ser una matriz de perros' });
+  //}
 
   try {
-    // Recorre los datos de los perros recibidos en el cuerpo de la solicitud
     for (const dogData of dogsData) {
       const { id, name, height, weight, life_span, image, temperament } = dogData;
 
-      // Validar los valores de altura y peso
+      
       const minHeight = parseFloat(height.min);
       const maxHeight = parseFloat(height.max);
       const minWeight = parseFloat(weight.min);
       const maxWeight = parseFloat(weight.max);
 
-      // Verificar si los valores de altura y peso son numéricos válidos
+      
       if (isNaN(minHeight) || isNaN(maxHeight) || isNaN(minWeight) || isNaN(maxWeight)) {
         return res.status(400).json({ error: 'Los valores de altura y peso deben ser numéricos' });
       }
-
-      // Guarda el objeto dog en la base de datos utilizando Sequelize
       const createdDog = await Dogs.create({
         id: id,
         name: name,
@@ -235,14 +228,10 @@ router.get('/dogs/:id', async (req,res) => {
       const response = await axios.get(`https://api.thedogapi.com/v1/breeds/${id}?api_key=${APIKEY}`);
       const breedData = response.data;
       
-  
-      // Check if breedData contains reference_image_id
-      if (!breedData.reference_image_id) {
+        if (!breedData.reference_image_id) {
         throw new Error('Reference image ID not found');
       }
-  
-      // Realizar una segunda solicitud para obtener la imagen utilizando el reference_image_id
-      const imageResponse = await axios.get(`https://api.thedogapi.com/v1/images/${breedData.reference_image_id}?api_key=${APIKEY}`);
+        const imageResponse = await axios.get(`https://api.thedogapi.com/v1/images/${breedData.reference_image_id}?api_key=${APIKEY}`);
       const imageData = imageResponse.data;
 
         const dogId ={
